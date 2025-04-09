@@ -63,7 +63,6 @@ export const defaultSettings: FrontendSettings = {
 		enabled: false,
 	},
 	publicApi: {
-		apiKeysPerUserLimit: 0,
 		enabled: false,
 		latestVersion: 0,
 		path: '',
@@ -141,5 +140,10 @@ export const defaultSettings: FrontendSettings = {
 	},
 	folders: {
 		enabled: false,
+	},
+	insights: {
+		enabled: false,
+		summary: true,
+		dashboard: false,
 	},
 };

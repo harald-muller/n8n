@@ -34,6 +34,11 @@ vi.mock('@/composables/useExecutionHelpers', () => ({
 	}),
 }));
 
+vi.mock('@/composables/useWorkflowHelpers', async (importOriginal) => {
+	const actual: object = await importOriginal();
+	return { ...actual, resolveParameter: vi.fn(() => 123) };
+});
+
 describe('RunData', () => {
 	beforeAll(() => {
 		resolveRelatedExecutionUrl.mockReturnValue('execution.url/123');
@@ -166,14 +171,14 @@ describe('RunData', () => {
 		expect(queryByTestId('ndv-pin-data')).not.toBeInTheDocument();
 	});
 
-	it('should disable pin data button when data is pinned', async () => {
+	it('should not disable pin data button when data is pinned [ADO-3143]', async () => {
 		const { getByTestId } = render({
 			defaultRunItems: [],
 			displayMode: 'table',
 			pinnedData: [{ json: { name: 'Test' } }],
 		});
 		const pinDataButton = getByTestId('ndv-pin-data');
-		expect(pinDataButton).toBeDisabled();
+		expect(pinDataButton).not.toBeDisabled();
 	});
 
 	it('should render callout when data is pinned in output panel', async () => {
@@ -354,8 +359,9 @@ describe('RunData', () => {
 		const { getByTestId, queryByTestId } = render({
 			runs: [
 				{
-					startTime: new Date().getTime(),
-					executionTime: new Date().getTime(),
+					startTime: Date.now(),
+					executionIndex: 0,
+					executionTime: 1,
 					data: {
 						main: [[{ json: {} }]],
 					},
@@ -363,8 +369,9 @@ describe('RunData', () => {
 					metadata,
 				},
 				{
-					startTime: new Date().getTime(),
-					executionTime: new Date().getTime(),
+					startTime: Date.now(),
+					executionIndex: 1,
+					executionTime: 1,
 					data: {
 						main: [[{ json: {} }]],
 					},
@@ -408,6 +415,7 @@ describe('RunData', () => {
 				{
 					hints: [],
 					startTime: 1737643696893,
+					executionIndex: 0,
 					executionTime: 2,
 					source: [
 						{
@@ -593,8 +601,9 @@ describe('RunData', () => {
 		runs?: ITaskData[];
 	}) => {
 		const defaultRun: ITaskData = {
-			startTime: new Date().getTime(),
-			executionTime: new Date().getTime(),
+			startTime: Date.now(),
+			executionIndex: 0,
+			executionTime: 1,
 			data: {
 				main: [defaultRunItems ?? [{ json: {} }]],
 			},
